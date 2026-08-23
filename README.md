@@ -10,14 +10,16 @@ El proyecto está construido con **arquitectura limpia**: `Product` es una datac
 
 Recorrido por la arquitectura: las capas, el criterio detrás de cada decisión y una demostración de los endpoints en funcionamiento. Se recomienda empezar por acá.
 
-### ▶️ [Ver el video](https://github.com/DarguinBarbosa/ArchitectureCleanCode/blob/main/docs/video/clean-architecture.mp4)
+[![Ver el recorrido por la arquitectura](https://img.youtube.com/vi/lsR9zHbkV-A/maxresdefault.jpg)](https://youtu.be/lsR9zHbkV-A)
 
-El archivo está en el repositorio, en [`docs/video/clean-architecture.mp4`](docs/video/clean-architecture.mp4), versionado con Git LFS. GitHub lo reproduce en el navegador desde ese enlace.
+### ▶️ [Ver en YouTube](https://youtu.be/lsR9zHbkV-A)
 
 | | |
 |---|---|
 | **Duración** | ~10 min |
 | **Contenido** | Estructura por capas · Regla de dependencia · Casos de uso · Demo del CRUD · Manejo de errores |
+
+También queda una copia en el repositorio, en [`docs/video/clean-architecture.mp4`](docs/video/clean-architecture.mp4), versionada con Git LFS.
 
 La versión en texto de lo mismo son los [13 ADRs](docs/adrs/README.md) y la [wiki](docs/wiki/Home.md).
 

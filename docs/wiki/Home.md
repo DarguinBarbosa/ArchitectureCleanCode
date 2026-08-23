@@ -8,9 +8,11 @@ Esta wiki explica cómo está organizado el proyecto por dentro. El video recorr
 
 ## 🎥 Video: recorrido por la arquitectura
 
-### ▶️ [Ver el video](https://github.com/DarguinBarbosa/ArchitectureCleanCode/blob/main/docs/video/clean-architecture.mp4) · ~10 min
+[![Ver el recorrido por la arquitectura](https://img.youtube.com/vi/lsR9zHbkV-A/maxresdefault.jpg)](https://youtu.be/lsR9zHbkV-A)
 
-El archivo vive en el repositorio, en `docs/video/clean-architecture.mp4`, versionado con Git LFS. GitHub lo reproduce en el navegador desde ese enlace.
+### ▶️ [Ver en YouTube](https://youtu.be/lsR9zHbkV-A) · ~10 min
+
+También queda una copia en el repositorio, en [`docs/video/clean-architecture.mp4`](https://github.com/DarguinBarbosa/ArchitectureCleanCode/blob/main/docs/video/clean-architecture.mp4), versionada con Git LFS.
 
 ---
 
