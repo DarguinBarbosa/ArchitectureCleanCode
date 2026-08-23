@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'drf_spectacular',
     'products',
 ]
 
@@ -91,6 +92,27 @@ DATABASES = {
 
 REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': 'config.exception_handler.custom_exception_handler',
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+# OpenAPI / documentación
+# https://drf-spectacular.readthedocs.io/
+
+# Las rutas de documentación solo se montan si esto está en True. Apagado, el
+# esquema no se genera nunca en runtime y las URLs ni siquiera existen.
+DOCS_ENABLED = config('DOCS_ENABLED', default=DEBUG, cast=bool)
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Archi — Products API',
+    'DESCRIPTION': (
+        'CRUD de productos sobre Django REST Framework, con arquitectura limpia: '
+        'entidad de dominio pura, casos de uso y repositorio detrás de un puerto.'
+    ),
+    'VERSION': '1.0.0',
+    # El esquema se sirve desde su propia URL; no se embebe en la respuesta.
+    'SERVE_INCLUDE_SCHEMA': False,
+    'COMPONENT_SPLIT_REQUEST': True,
+    'SORT_OPERATIONS': False,
 }
 
 # Password validation
