@@ -1,0 +1,37 @@
+@startuml architecture
+!pragma layout smetana
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Segoe UI
+skinparam dpi 160
+skinparam roundcorner 12
+skinparam rectangle {
+  FontColor #0F172A
+  FontSize 14
+  BorderColor #7C8A99
+  BorderThickness 1.5
+}
+
+title Clean / Hexagonal Architecture — layers (dependencies point inward)
+
+rectangle "Frameworks & Drivers\nDjango · Django REST Framework · MySQL" as R4 #EEF1F4 {
+  rectangle "Interface Adapters — api + infra\nProductsView · ProductDetailView · Serializers\nDjangoProductRepository · ProductModel" as R3 #EAF0F7 {
+    rectangle "Application — use cases\nCreateProduct · GetProduct · ListProducts · UpdateProduct · DeleteProduct\nProductRepository (port · interface)" as R2 #E4F1EE {
+      rectangle "Domain — entities\nProduct (frozen · own UUID · Decimal) · exceptions" as R1 #F7EFE1 {
+        rectangle "shared/domain — kernel\nDomainError · NotFoundError · ValidationError" as R0 #F1E7D3
+      }
+    }
+  }
+}
+
+legend right
+  == Dependency rule
+  Outer layers depend on inner ones.
+  Nothing inner knows the outer layers.
+  ----
+  infra implements the port (ProductRepository)
+  defined in application  →  the DB is replaceable.
+endlegend
+
+@enduml

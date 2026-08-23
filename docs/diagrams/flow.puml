@@ -1,0 +1,48 @@
+@startuml flow
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Segoe UI
+skinparam dpi 160
+skinparam sequenceMessageAlign center
+skinparam ParticipantFontStyle bold
+skinparam sequence {
+  ArrowColor #64748B
+  LifeLineBorderColor #94A3B8
+  ParticipantBorderColor #64748B
+  ParticipantBackgroundColor #F8FAFC
+  ActorBorderColor #64748B
+}
+
+title Request flow — POST /api/v1/products/
+
+actor Client as C
+participant "ProductsView\n(api)" as V
+participant "ProductInputSerializer\n(api)" as S
+participant "CreateProduct\n(application)" as UC
+participant "Product\n(domain)" as E
+participant "DjangoProductRepository\n(infra)" as R
+database "MySQL" as DB
+
+C -> V : POST /products  {name, description, price}
+V -> S : is_valid()   (shape only)
+S --> V : validated_data
+V -> UC : execute(name, description, price)
+UC -> E : Product(...)
+note right of E : Business rules run\nin __post_init__
+E --> UC : valid entity
+UC -> R : create(product)
+note right of R : called through the\nProductRepository port
+R -> DB : INSERT
+DB --> R : ok
+R --> UC : product
+UC --> V : product
+V --> C : 201 Created  (ProductOutputSerializer)
+
+note over C, DB
+  Error paths, mapped by the global handler:
+  · negative price → InvalidPrice → 400
+  · id not found (get / update / delete) → ProductNotFound → 404
+end note
+
+@enduml
