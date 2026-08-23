@@ -1,0 +1,40 @@
+# ===== Entorno / secretos =====
+.env
+.env.*
+!.env.example
+
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.Python
+
+# ===== Entornos virtuales =====
+venv/
+.venv/
+env/
+ENV/
+
+# ===== Django =====
+*.log
+db.sqlite3
+db.sqlite3-journal
+/staticfiles/
+/media/
+
+# ===== Cobertura / tests =====
+.coverage
+coverage.xml
+htmlcov/
+.pytest_cache/
+
+# ===== SonarQube =====
+.scannerwork/
+
+# ===== IDE / SO =====
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db

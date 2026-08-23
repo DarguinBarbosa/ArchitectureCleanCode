@@ -1,0 +1,14 @@
+# Dependencias directas del proyecto.
+# Las transitivas (asgiref, sqlparse, PyYAML, jsonschema, ...) las resuelve pip.
+
+Django==6.0.4
+djangorestframework==3.17.1
+
+# Driver MySQL. En Linux necesita default-libmysqlclient-dev y compilador.
+mysqlclient==2.2.8
+
+# Configuración por variables de entorno (ver .env.example).
+python-decouple==3.8
+
+# Esquema OpenAPI + Swagger UI / Redoc.
+drf-spectacular==0.30.0
