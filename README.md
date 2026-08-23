@@ -6,19 +6,20 @@ El proyecto está construido con **arquitectura limpia**: `Product` es una datac
 
 ---
 
-## 🎥 Wiki — Video explicativo
+## 🎥 Video explicativo
 
-Recorrido del proyecto en video: la arquitectura, el criterio detrás de cada decisión y una demostración de los endpoints en funcionamiento. Se recomienda empezar por acá.
+Recorrido por la arquitectura: las capas, el criterio detrás de cada decisión y una demostración de los endpoints en funcionamiento. Se recomienda empezar por acá.
 
-### 🔗 _(pegar acá el enlace al video)_
+### ▶️ [Ver el video](https://github.com/DarguinBarbosa/ArchitectureCleanCode/blob/main/docs/video/clean-architecture.mp4)
+
+El archivo está en el repositorio, en [`docs/video/clean-architecture.mp4`](docs/video/clean-architecture.mp4), versionado con Git LFS. GitHub lo reproduce en el navegador desde ese enlace.
 
 | | |
 |---|---|
-| **Duración** | — |
-| **Publicado** | — |
-| **Contenido** | Estructura por capas · Regla de dependencia · Casos de uso · Demo del CRUD · Manejo de errores · Swagger |
+| **Duración** | ~10 min |
+| **Contenido** | Estructura por capas · Regla de dependencia · Casos de uso · Demo del CRUD · Manejo de errores |
 
-La versión en texto de lo mismo son los [13 ADRs](docs/adrs/README.md).
+La versión en texto de lo mismo son los [13 ADRs](docs/adrs/README.md) y la [wiki](docs/wiki/Home.md).
 
 ---
 

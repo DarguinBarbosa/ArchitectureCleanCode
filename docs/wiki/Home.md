@@ -6,6 +6,14 @@ Esta wiki explica cómo está organizado el proyecto por dentro. El video recorr
 
 ---
 
+## 🎥 Video: recorrido por la arquitectura
+
+### ▶️ [Ver el video](https://github.com/DarguinBarbosa/ArchitectureCleanCode/blob/main/docs/video/clean-architecture.mp4) · ~10 min
+
+El archivo vive en el repositorio, en `docs/video/clean-architecture.mp4`, versionado con Git LFS. GitHub lo reproduce en el navegador desde ese enlace.
+
+---
+
 ## De qué trata el proyecto
 
 Es un CRUD de productos. Lo relevante no es qué hace, sino cómo está organizado.
