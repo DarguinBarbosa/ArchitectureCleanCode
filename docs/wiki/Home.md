@@ -1,6 +1,6 @@
 # Archi — Products API
 
-API REST de productos construida con **Clean Architecture** sobre Django REST Framework y MySQL.
+API de productos construida con **Clean Architecture** sobre Django, expuesta por **REST y GraphQL** contra MySQL.
 
 Esta wiki explica cómo está organizado el proyecto por dentro. El video recorre lo mismo en 10 minutos; el texto que sigue sirve para consultarlo después, sin volver a mirarlo.
 
@@ -20,7 +20,9 @@ También queda una copia en el repositorio, en [`docs/video/clean-architecture.m
 
 Es un CRUD de productos. Lo relevante no es qué hace, sino cómo está organizado.
 
-Está construido con Django y Django REST Framework contra una base MySQL, y toda la organización responde a un objetivo: **que la lógica de negocio no dependa del framework**. Django queda conectado por afuera y podría sustituirse sin tocar el núcleo del sistema.
+Está construido con Django contra una base MySQL y se expone por dos protocolos, REST y GraphQL. Toda la organización responde a un objetivo: **que la lógica de negocio no dependa del framework**. Django queda conectado por afuera y podría sustituirse sin tocar el núcleo del sistema.
+
+Que haya dos protocolos sobre el mismo núcleo es la mejor prueba de que eso funciona: GraphQL se agregó entero sin modificar una línea del dominio ni de los casos de uso.
 
 ---
 
@@ -79,13 +81,32 @@ Si mañana hubiera que reemplazar MySQL, se tocaría únicamente este archivo. E
 
 ### 4. API — la capa web, que solo coordina
 
-📄 `products/api/serializers.py` · `products/api/views.py`
+📄 `products/api/serializers.py` · `products/api/views.py` · `products/api/composition.py`
 
 Es la capa que recibe los requests HTTP, con una regla explícita: **las vistas no deciden nada de negocio, solo coordinan.**
 
 Los serializers se ocupan de la **forma** del request: que los campos estén presentes, que el precio venga como número. Las reglas de negocio no se repiten acá. Si alguien envía un precio negativo, el serializer lo deja pasar y es la entidad la que lo rechaza. La regla vive en un solo lugar.
 
-La vista se limita a construir el caso de uso, pasarle el repositorio, ejecutarlo y devolver la respuesta. En una vista no hay lógica de negocio, y eso es deliberado.
+La vista se limita a pedir los casos de uso al composition root, ejecutar el que corresponde y devolver la respuesta. En una vista no hay lógica de negocio, y eso es deliberado.
+
+Un detalle que importa: **la vista tampoco conoce el repositorio**. Recibe casos de uso ya construidos. Que exista una persistencia por detrás es un asunto de las capas internas, y la capa web no tiene por qué enterarse.
+
+### 5. GraphQL — un segundo adaptador, el mismo núcleo
+
+📄 `products/api/graphql/`
+
+Además de REST, el catálogo se expone por GraphQL en `/graphql/`, con **Strawberry**. No es una funcionalidad aparte: es otro protocolo de entrada a los mismos casos de uso. Un producto creado por REST se consulta por GraphQL sin nada que sincronizar.
+
+Los resolvers siguen exactamente la misma regla que las vistas: toman el caso de uso del contexto, lo ejecutan y mapean el resultado. Si se envía un precio negativo por GraphQL, quien lo rechaza es la entidad, y el cliente recibe `InvalidPrice` — la misma regla, escrita una sola vez.
+
+La elección de librería fue arquitectónica. Se descartó `graphene-django` justamente por su función más promocionada: derivar los tipos automáticamente desde los modelos del ORM, que acoplaría la capa web a la persistencia y dejaría los casos de uso de lado.
+
+Lo que aporta GraphQL es la **consulta declarativa**: el cliente pide los campos que necesita y recibe eso y nada más.
+
+```graphql
+{ products { name } }              # solo el nombre
+{ products { name price } }        # nombre y precio, sin tocar el servidor
+```
 
 ---
 
@@ -142,6 +163,7 @@ La lógica de negocio está en el centro y Django queda en la capa más externa.
 | Recurso | Dónde |
 |---|---|
 | Instalación, endpoints y ejemplos | [`README.md`](../blob/main/README.md) del repositorio |
-| El fundamento de cada decisión | [13 ADRs](../blob/main/docs/adrs/README.md) en `docs/adrs/` |
+| El fundamento de cada decisión | [14 ADRs](../blob/main/docs/adrs/README.md) en `docs/adrs/` |
 | Documentación interactiva de la API | Swagger UI en `/api/docs/` |
+| Explorador de GraphQL | GraphiQL en `/graphql/` |
 | Esquema OpenAPI | [`docs/openapi/schema.yaml`](../blob/main/docs/openapi/schema.yaml) |

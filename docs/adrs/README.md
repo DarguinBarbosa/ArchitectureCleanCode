@@ -21,6 +21,7 @@ Un ADR no se edita cuando cambia de opinión el proyecto: se marca como reemplaz
 | [0011](0011-configuracion-por-entorno.md) | Configuración por variables de entorno con python-decouple | aceptada |
 | [0012](0012-tests-unitarios-sin-django.md) | Tests unitarios sin Django ni base de datos | aceptada |
 | [0013](0013-openapi-con-drf-spectacular.md) | Documentación OpenAPI con drf-spectacular, apagable por entorno | aceptada |
+| [0014](0014-graphql-con-strawberry.md) | GraphQL con Strawberry, como segundo adaptador | aceptada |
 
 ## Formato
 
