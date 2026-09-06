@@ -12,3 +12,6 @@ python-decouple==3.8
 
 # Esquema OpenAPI + Swagger UI / Redoc.
 drf-spectacular==0.30.0
+
+# GraphQL: schema code-first + GraphiQL. El extra [django] trae la vista.
+strawberry-graphql[django]==0.327.4
