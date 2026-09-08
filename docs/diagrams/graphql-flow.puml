@@ -1,0 +1,82 @@
+@startuml graphql-flow
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName Segoe UI
+skinparam dpi 160
+skinparam sequenceMessageAlign center
+skinparam ParticipantFontStyle bold
+skinparam sequence {
+  ArrowColor #64748B
+  LifeLineBorderColor #94A3B8
+  ParticipantBorderColor #64748B
+  ParticipantBackgroundColor #F8FAFC
+  ActorBorderColor #64748B
+  GroupBackgroundColor #EEF1F4
+  GroupBorderColor #94A3B8
+}
+
+title GraphQL request flow — POST /graphql/
+
+actor Client as C
+participant "ProductsGraphQLView\n(api/graphql)" as V
+participant "Schema\n(strawberry)" as SC
+participant "Resolver\n(api/graphql)" as RS
+participant "CreateProduct\n(application)" as UC
+participant "Product\n(domain)" as E
+participant "DjangoProductRepository\n(infra)" as R
+database "MySQL" as DB
+
+C -> V : POST /graphql\nmutation { createProduct(input: {...}) { id name } }
+
+V -> V : get_context()
+note right of V
+  The composition root wires the
+  repository into the use cases.
+  Resolvers never see a repository.
+end note
+
+V -> SC : execute(query, context)
+
+group Parse and validate against the schema
+  SC -> SC : parse the query into a tree
+  SC -> SC : validate every field and type
+  note right of SC
+    An unknown field is rejected here,
+    before a single resolver runs.
+  end note
+end
+
+SC -> RS : resolve createProduct
+RS -> UC : execute(name, description, price)
+UC -> E : Product(...)
+note right of E : Business rules run\nin __post_init__
+E --> UC : valid entity
+UC -> R : create(product)
+note right of R : called through the\nProductRepository port
+R -> DB : INSERT
+DB --> R : ok
+R --> UC : product
+UC --> RS : product
+RS --> SC : ProductType.from_entity(product)
+
+group Only the requested fields are resolved
+  SC -> SC : id, name
+  note right of SC
+    "description" and "price" were not
+    asked for, so nothing resolves them.
+    This is what declarative means.
+  end note
+end
+
+SC --> V : { "data": { "createProduct": {...} } }
+V --> C : 200 OK
+
+note over C, DB
+  Errors: GraphQL always answers 200, so DomainErrorExtension
+  puts the category in extensions.code
+  · negative price → InvalidPrice → BAD_REQUEST
+  · id not found → ProductNotFound → NOT_FOUND
+end note
+
+@enduml

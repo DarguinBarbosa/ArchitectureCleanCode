@@ -1,0 +1,150 @@
+================================================================================
+GUION DEL VIDEO — Integración de GraphQL en Django (API de Productos)
+================================================================================
+
+Duración: 5 minutos.
+
+Cómo leerlo:
+  · "EN PANTALLA" = qué mostrar mientras hablás.
+  · El texto de abajo es tu hilo, no hace falta leerlo textual.
+
+Antes de grabar:
+  · Terminal en la raíz del proyecto, con el entorno virtual activado.
+  · El servidor NO levantado todavía (lo levantás en vivo, en la sección 3).
+  · Tené un producto ya cargado en la base.
+  · Copiá un UUID real de tu base para la consulta de la sección 4.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1 · QUÉ VOY A HACER  (~30 seg)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EN PANTALLA: el editor con el proyecto abierto.
+
+Voy a integrar GraphQL en una aplicación web hecha con Django.
+
+El proyecto es una API de productos que ya funciona por REST. En REST, cada
+endpoint devuelve una forma fija: pido la lista y me trae id, nombre, descripción
+y precio, aunque solo necesite los nombres. GraphQL da vuelta eso: el cliente
+escribe qué campos quiere y recibe exactamente eso.
+
+Y una aclaración que ordena todo lo demás: este proyecto usa arquitectura limpia,
+así que GraphQL tiene que entrar por el borde, sin tocar la lógica de negocio.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2 · LA LIBRERÍA: POR QUÉ STRAWBERRY  (~1 min)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EN PANTALLA: docs/adrs/0014-graphql-con-strawberry.md, en la tabla de alternativas.
+
+Para GraphQL en Django hay tres opciones: graphene-django, ariadne y strawberry.
+
+La más conocida es graphene-django, y sin embargo la descarté. El motivo es
+justamente lo que más se promociona de ella: una clase llamada DjangoObjectType,
+que arma el tipo de GraphQL leyendo directamente el modelo del ORM.
+
+Suena comodísimo, y en otro proyecto lo sería. Pero acá significaría que la capa
+web queda pegada a la base de datos y que los casos de uso quedan salteados. Es
+exactamente lo que esta arquitectura evita.
+
+Por eso elegí Strawberry, que es code-first: los tipos se declaran con
+anotaciones de Python normales. La elegí por arquitectura, no por rendimiento
+ni por popularidad.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3 · INSTALACIÓN Y SERVIDOR  (~1 min)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EN PANTALLA: la terminal. Ejecutar el pip install en vivo.
+
+    pip install "strawberry-graphql[django]"
+
+El gestor de paquetes es pip, porque estamos en Python. Fíjense en el corchete
+django: es un extra que además de la librería base trae la vista que va a atender
+el endpoint. Y miren las dependencias que arrastra, sobre todo graphql-core, que
+es la implementación de GraphQL en Python.
+
+EN PANTALLA: config/settings.py y config/urls.py, pasando rápido.
+
+En settings agrego strawberry.django a las aplicaciones instaladas, y en las
+rutas registro el endpoint. Es una sola URL, /graphql/: no hay una ruta por
+operación como en REST, todo entra por acá.
+
+EN PANTALLA: la terminal.
+
+    python manage.py runserver
+
+Y dejo el servidor corriendo el resto del video.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+4 · DEMO: LA CONSULTA DECLARATIVA  (~1 min 30)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EN PANTALLA: el navegador en http://localhost:8000/graphql/
+
+Esto es GraphiQL, el explorador que viene con Strawberry. Me autocompleta porque
+el servidor le contó de antemano qué campos existen.
+
+Pido solo los nombres:
+
+    { products { name } }
+
+Me devuelve solo los nombres. Ahora agrego el precio:
+
+    { products { name price } }
+
+Vienen los dos campos. Y ojo con esto: no toqué el servidor. Mismo endpoint,
+mismo resolver. Lo único que cambió es lo que pidió el cliente. Eso es la
+consulta declarativa.
+
+Ahora creo un producto:
+
+    mutation {
+      createProduct(input: {name: "Monitor 27", price: "320.00", description: "IPS"}) {
+        id
+        name
+      }
+    }
+
+EN PANTALLA: la terminal, curl al endpoint REST de productos.
+
+Y acá está la prueba de que es un solo sistema: consulto por REST y el producto
+que creé por GraphQL aparece. No hay nada que sincronizar.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+5 · DÓNDE ENCAJA, Y LOS ERRORES  (~1 min)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EN PANTALLA: GraphiQL, mandando un precio negativo.
+
+    mutation { createProduct(input: {name: "Roto", price: "-10.00"}) { id } }
+
+Miren: dice "Price cannot be negative", con el tipo InvalidPrice. Ese mensaje no
+lo escribí en el resolver. Sale de la entidad Product, la misma que protege a
+REST. La regla está escrita una sola vez.
+
+Y fíjense en el código de estado: doscientos. GraphQL siempre responde 200,
+incluso cuando falla, porque un request puede fallar parcialmente. Por eso la
+categoría del error viaja adentro, en extensions.
+
+EN PANTALLA: products/api/graphql/mutations.py
+
+Miren lo que hace un resolver: toma el caso de uso, lo ejecuta y traduce el
+resultado. Nada más. No valida reglas, no arma consultas, y ni siquiera conoce el
+repositorio: lo recibe ya construido desde afuera.
+
+EN PANTALLA: docs/diagrams/graphql-flow.png
+
+En el diagrama se ve completo: el resolver llama al caso de uso, el caso de uso
+construye la entidad —ahí corren las validaciones— y la guarda a través del
+puerto. Exactamente el mismo camino que sigue REST.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+6 · CIERRE  (~20 seg)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EN PANTALLA: el diagrama, o el editor.
+
+Agregué un protocolo entero de entrada —con su librería, su configuración y su
+esquema— y no toqué ni una línea del dominio ni de los casos de uso.
+
+Esa era la promesa de esta arquitectura, y esto es la prueba de que se cumple.
